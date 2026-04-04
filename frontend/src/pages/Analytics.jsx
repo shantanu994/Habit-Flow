@@ -20,22 +20,64 @@ export default function Analytics() {
   const [analytics, setAnalytics] = useState([]);
   const [selected, setSelected] = useState(null);
   const [heatmap, setHeatmap] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAnalytics().then(data => {
+    loadAnalytics();
+  }, []);
+
+  const loadAnalytics = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      const data = await getAnalytics();
       setAnalytics(data);
       if (data.length > 0) {
         setSelected(data[0]);
-        getHeatmap(data[0].id).then(logs => setHeatmap(buildHeatmap(logs)));
+        const logs = await getHeatmap(data[0].id);
+        setHeatmap(buildHeatmap(logs));
       }
-    });
-  }, []);
+    } catch (err) {
+      setError("Failed to load analytics. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSelect = async (habit) => {
-    setSelected(habit);
-    const logs = await getHeatmap(habit.id);
-    setHeatmap(buildHeatmap(logs));
+    try {
+      setSelected(habit);
+      const logs = await getHeatmap(habit.id);
+      setHeatmap(buildHeatmap(logs));
+    } catch (err) {
+      setError("Failed to load habit details.");
+      console.error(err);
+    }
   };
+
+  if (error) return (
+    <div className="page">
+      <div className="error-container">
+        <h2>❌ Error</h2>
+        <p>{error}</p>
+        <button className="retry-btn" onClick={loadAnalytics}>🔄 Retry</button>
+      </div>
+    </div>
+  );
+
+  if (loading) return <div className="loading">⏳ Loading analytics...</div>;
+
+  if (analytics.length === 0) return (
+    <div className="page">
+      <div className="page-header">
+        <h1>📊 Analytics</h1>
+        <p>Your habit performance</p>
+      </div>
+      <div className="empty">No habits yet! Create one to start tracking.</div>
+    </div>
+  );
 
   const barData = analytics.map(h => ({ name: h.icon + " " + h.name, completions: h.total_completions, fill: h.color }));
   const pieData = analytics.map(h => ({ name: h.name, value: h.total_completions, color: h.color }));

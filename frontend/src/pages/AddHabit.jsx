@@ -10,26 +10,54 @@ export default function AddHabit({ onAdd }) {
   const [color, setColor] = useState("#6366f1");
   const [habits, setHabits] = useState([]);
   const [msg, setMsg] = useState("");
+  const [msgType, setMsgType] = useState(""); // 'success' or 'error'
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => { loadHabits(); }, []);
 
   const loadHabits = async () => {
-    const data = await getTodayHabits();
-    setHabits(data);
+    try {
+      const data = await getTodayHabits();
+      setHabits(data);
+    } catch (err) {
+      console.error(err);
+      showMessage("Failed to load habits", "error");
+    }
+  };
+
+  const showMessage = (text, type = "success") => {
+    setMsg(text);
+    setMsgType(type);
+    setTimeout(() => { setMsg(""); }, 3000);
   };
 
   const handleSubmit = async () => {
-    if (!name.trim()) return setMsg("Please enter a habit name!");
-    await addHabit({ name, icon, color });
-    setMsg("✅ Habit added!");
-    setName("");
-    loadHabits();
-    setTimeout(() => { setMsg(""); onAdd(); }, 1000);
+    if (!name.trim()) return showMessage("Please enter a habit name!", "error");
+    
+    try {
+      setLoading(true);
+      await addHabit({ name, icon, color });
+      showMessage("✅ Habit added successfully!", "success");
+      setName("");
+      await loadHabits();
+      setTimeout(() => { onAdd(); }, 1000);
+    } catch (err) {
+      console.error(err);
+      showMessage("❌ Failed to add habit. Please try again.", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (id) => {
-    await deleteHabit(id);
-    loadHabits();
+    try {
+      await deleteHabit(id);
+      showMessage("✅ Habit deleted!", "success");
+      await loadHabits();
+    } catch (err) {
+      console.error(err);
+      showMessage("❌ Failed to delete habit.", "error");
+    }
   };
 
   return (
@@ -66,9 +94,9 @@ export default function AddHabit({ onAdd }) {
           </div>
         </div>
 
-        {msg && <div className="msg">{msg}</div>}
-        <button className="submit-btn" style={{ background: color }} onClick={handleSubmit}>
-          {icon} Add Habit
+        {msg && <div className={`msg msg-${msgType}`}>{msg}</div>}
+        <button className="submit-btn" style={{ background: color }} onClick={handleSubmit} disabled={loading}>
+          {loading ? "⏳ Adding..." : `${icon} Add Habit`}
         </button>
       </div>
 

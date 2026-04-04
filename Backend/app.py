@@ -31,37 +31,52 @@ def get_today():
 # ── ADD a new habit ──────────────────────────────────
 @app.route('/api/habits', methods=['POST'])
 def add_habit():
-    data = request.json
-    habit = Habit(
-        name=data['name'],
-        icon=data.get('icon', '⭐'),
-        color=data.get('color', '#6366f1')
-    )
-    db.session.add(habit)
-    db.session.commit()
-    return jsonify(habit.to_dict()), 201
+    try:
+        data = request.json
+        if not data or 'name' not in data:
+            return jsonify({'error': 'Habit name is required'}), 400
+        if not data['name'].strip():
+            return jsonify({'error': 'Habit name cannot be empty'}), 400
+        habit = Habit(
+            name=data['name'].strip(),
+            icon=data.get('icon', '⭐'),
+            color=data.get('color', '#6366f1')
+        )
+        db.session.add(habit)
+        db.session.commit()
+        return jsonify(habit.to_dict()), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # ── DELETE a habit ───────────────────────────────────
 @app.route('/api/habits/<int:habit_id>', methods=['DELETE'])
 def delete_habit(habit_id):
-    habit = Habit.query.get_or_404(habit_id)
-    db.session.delete(habit)
-    db.session.commit()
-    return jsonify({'message': 'Deleted'})
+    try:
+        habit = Habit.query.get_or_404(habit_id)
+        db.session.delete(habit)
+        db.session.commit()
+        return jsonify({'message': 'Deleted'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # ── TOGGLE today's completion ────────────────────────
 @app.route('/api/habits/<int:habit_id>/complete', methods=['POST'])
 def mark_complete(habit_id):
-    today = date.today()
-    existing = HabitLog.query.filter_by(habit_id=habit_id, date=today).first()
-    if existing:
-        db.session.delete(existing)
+    try:
+        # Verify habit exists
+        habit = Habit.query.get_or_404(habit_id)
+        today = date.today()
+        existing = HabitLog.query.filter_by(habit_id=habit_id, date=today).first()
+        if existing:
+            db.session.delete(existing)
+            db.session.commit()
+            return jsonify({'status': 'unchecked'})
+        log = HabitLog(habit_id=habit_id, date=today, completed=True)
+        db.session.add(log)
         db.session.commit()
-        return jsonify({'status': 'unchecked'})
-    log = HabitLog(habit_id=habit_id, date=today, completed=True)
-    db.session.add(log)
-    db.session.commit()
-    return jsonify({'status': 'checked'})
+        return jsonify({'status': 'checked'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # ── GET analytics for all habits ────────────────────
 @app.route('/api/analytics', methods=['GET'])
@@ -101,4 +116,9 @@ def calculate_streak(habit_id):
     return streak
 
 if __name__ == '__main__':
+    print("\n" + "="*50)
+    print("🔥 HabitFlow Backend Starting...")
+    print("📍 Backend running on: http://localhost:5000")
+    print("✅ CORS enabled for frontend")
+    print("="*50 + "\n")
     app.run(debug=True, port=5000)

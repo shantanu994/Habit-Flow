@@ -4,25 +4,49 @@ import { getTodayHabits, markComplete } from "../api/habits";
 export default function Dashboard() {
   const [habits, setHabits] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => { loadHabits(); }, []);
 
   const loadHabits = async () => {
-    const data = await getTodayHabits();
-    setHabits(data);
-    setLoading(false);
+    try {
+      setError(null);
+      setLoading(true);
+      const data = await getTodayHabits();
+      setHabits(data);
+    } catch (err) {
+      setError("Failed to load habits. Make sure the backend is running on http://localhost:5000");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleToggle = async (id) => {
-    await markComplete(id);
-    loadHabits();
+    try {
+      await markComplete(id);
+      await loadHabits();
+    } catch (err) {
+      setError("Failed to update habit. Please try again.");
+      console.error(err);
+    }
   };
 
   const completed = habits.filter(h => h.completed_today).length;
   const progress = habits.length ? Math.round((completed / habits.length) * 100) : 0;
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (error) return (
+    <div className="page">
+      <div className="error-container">
+        <h2>❌ Error</h2>
+        <p>{error}</p>
+        <button className="retry-btn" onClick={loadHabits}>🔄 Retry</button>
+      </div>
+    </div>
+  );
+
+  if (loading) return <div className="loading">⏳ Loading your habits...</div>;
 
   return (
     <div className="page">
