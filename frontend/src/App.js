@@ -34,20 +34,29 @@ export default function App() {
           {/* Pages */}
           {page === "dashboard" && <Dashboard />}
           {page === "analytics" && <Analytics />}
-          {page === "add"       && <AddHabit onAdd={() => setPage("dashboard")} />}
+          {page === "add" && <AddHabit onAdd={() => setPage("dashboard")} />}
         </div>
 
         {/* Bottom Navbar */}
         <nav className="navbar">
-          <button className={`nav-btn ${page === "dashboard" ? "active" : ""}`} onClick={() => setPage("dashboard")}>
+          <button
+            className={`nav-btn ${page === "dashboard" ? "active" : ""}`}
+            onClick={() => setPage("dashboard")}
+          >
             <span>🏠</span>
             <span>Today</span>
           </button>
-          <button className={`nav-btn ${page === "analytics" ? "active" : ""}`} onClick={() => setPage("analytics")}>
+          <button
+            className={`nav-btn ${page === "analytics" ? "active" : ""}`}
+            onClick={() => setPage("analytics")}
+          >
             <span>📊</span>
             <span>Analytics</span>
           </button>
-          <button className={`nav-btn ${page === "add" ? "active" : ""}`} onClick={() => setPage("add")}>
+          <button
+            className={`nav-btn ${page === "add" ? "active" : ""}`}
+            onClick={() => setPage("add")}
+          >
             <span>➕</span>
             <span>Add Habit</span>
           </button>

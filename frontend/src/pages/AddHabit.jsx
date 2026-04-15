@@ -85,7 +85,9 @@ export default function AddHabit({ onAdd }) {
       <div className="form-card">
         <div className="form-title-wrap">
           <h3 className="form-title">Create a Signature Habit</h3>
-          <p className="form-subtitle">Pick a name, icon, and color that feels motivating.</p>
+          <p className="form-subtitle">
+            Pick a name, icon, and color that feels motivating.
+          </p>
         </div>
 
         <div className="form-group">
@@ -158,7 +160,9 @@ export default function AddHabit({ onAdd }) {
             </button>
           </div>
         ))}
-        {habits.length === 0 && <p className="empty-hint">No habits yet. Add your first one above.</p>}
+        {habits.length === 0 && (
+          <p className="empty-hint">No habits yet. Add your first one above.</p>
+        )}
       </div>
     </div>
   );

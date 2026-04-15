@@ -12,7 +12,9 @@ export default function Dashboard() {
   const [allDoneShown, setAllDoneShown] = useState(false);
   const prevCompleted = useRef(0);
 
-  useEffect(() => { loadHabits(); }, []);
+  useEffect(() => {
+    loadHabits();
+  }, []);
 
   const loadHabits = async () => {
     const data = await getTodayHabits();
@@ -34,8 +36,12 @@ export default function Dashboard() {
     setHabits(updated);
 
     // Check if all done
-    const completedNow = updated.filter(h => h.completed_today).length;
-    if (completedNow === updated.length && updated.length > 0 && !allDoneShown) {
+    const completedNow = updated.filter((h) => h.completed_today).length;
+    if (
+      completedNow === updated.length &&
+      updated.length > 0 &&
+      !allDoneShown
+    ) {
       setAllDoneShown(true);
       setQuote("🎉 ALL HABITS DONE! You're on fire today!");
       playAllDone();
@@ -43,7 +49,7 @@ export default function Dashboard() {
         particleCount: 150,
         spread: 80,
         origin: { y: 0.6 },
-        colors: ['#6366f1', '#ec4899', '#f59e0b', '#10b981']
+        colors: ["#6366f1", "#ec4899", "#f59e0b", "#10b981"],
       });
     } else if (completedNow < updated.length) {
       setAllDoneShown(false);
@@ -52,11 +58,17 @@ export default function Dashboard() {
     prevCompleted.current = completedNow;
   };
 
-  const completed = habits.filter(h => h.completed_today).length;
+  const completed = habits.filter((h) => h.completed_today).length;
   const totalStreak = habits.reduce((sum, h) => sum + h.streak, 0);
   const bestStreak = habits.reduce((max, h) => Math.max(max, h.streak), 0);
-  const progress = habits.length ? Math.round((completed / habits.length) * 100) : 0;
-  const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  const progress = habits.length
+    ? Math.round((completed / habits.length) * 100)
+    : 0;
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
   const allDone = habits.length > 0 && completed === habits.length;
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -94,14 +106,18 @@ export default function Dashboard() {
       {/* Progress Bar */}
       <div className="progress-card">
         <div className="progress-info">
-          <span>{completed} / {habits.length} habits done</span>
+          <span>
+            {completed} / {habits.length} habits done
+          </span>
           <span className="pct">{progress}%</span>
         </div>
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${progress}%` }} />
         </div>
         <div className="progress-meta">
-          <span>{allDone ? "Momentum locked in" : "Stay consistent and stack wins"}</span>
+          <span>
+            {allDone ? "Momentum locked in" : "Stay consistent and stack wins"}
+          </span>
           <span>Total streak days: {totalStreak}</span>
         </div>
       </div>
@@ -109,9 +125,11 @@ export default function Dashboard() {
       {/* Habits List */}
       <div className="habits-list">
         {habits.length === 0 && (
-          <div className="empty">No habits yet! Click ➕ Add Habit to start.</div>
+          <div className="empty">
+            No habits yet! Click ➕ Add Habit to start.
+          </div>
         )}
-        {habits.map(habit => (
+        {habits.map((habit) => (
           <div
             key={habit.id}
             className={`habit-card 
@@ -123,8 +141,10 @@ export default function Dashboard() {
               <button
                 className="check-btn"
                 style={{
-                  background: habit.completed_today ? habit.color : "transparent",
-                  borderColor: habit.color
+                  background: habit.completed_today
+                    ? habit.color
+                    : "transparent",
+                  borderColor: habit.color,
                 }}
                 onClick={() => handleToggle(habit.id, habit.completed_today)}
               >

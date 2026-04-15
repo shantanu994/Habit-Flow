@@ -26,28 +26,39 @@ export default function ContributionHeatmap() {
     }
   };
 
-  // Convert flat data array into a grid structure
-  // Grid: 7 rows (days of week) x ~53 columns (weeks)
+  // Build a horizontal grid: each column is one week (Mon-Sun).
   const buildGrid = () => {
     if (!data.length) return [];
 
-    const grid = Array(7)
-      .fill(null)
-      .map(() => []);
+    const weekColumns = [];
+    let currentWeek = [];
 
-    data.forEach((item) => {
+    data.forEach((item, index) => {
       const date = new Date(item.date + "T00:00:00");
-      const dayOfWeek = date.getDay();
-      // Adjust: JavaScript's getDay() returns 0 for Sunday, we want 0 for Monday
-      const adjustedDay = (dayOfWeek + 6) % 7;
+      const adjustedDay = (date.getDay() + 6) % 7;
 
-      if (!grid[adjustedDay]) {
-        grid[adjustedDay] = [];
+      if (index === 0) {
+        for (let i = 0; i < adjustedDay; i += 1) {
+          currentWeek.push(null);
+        }
       }
-      grid[adjustedDay].push(item);
+
+      currentWeek.push(item);
+
+      if (currentWeek.length === 7) {
+        weekColumns.push(currentWeek);
+        currentWeek = [];
+      }
     });
 
-    return grid;
+    if (currentWeek.length > 0) {
+      while (currentWeek.length < 7) {
+        currentWeek.push(null);
+      }
+      weekColumns.push(currentWeek);
+    }
+
+    return weekColumns;
   };
 
   const getIntensityLevel = (count) => {
@@ -98,15 +109,18 @@ export default function ContributionHeatmap() {
     const labels = [];
     let lastMonth = null;
 
-    data.forEach((item, index) => {
-      const date = new Date(item.date + "T00:00:00");
+    grid.forEach((week, weekIndex) => {
+      const firstDayInWeek = week.find(Boolean);
+      if (!firstDayInWeek) return;
+
+      const date = new Date(firstDayInWeek.date + "T00:00:00");
       const month = date.getMonth();
       const year = date.getFullYear();
       const key = `${year}-${month}`;
 
       if (key !== lastMonth) {
         labels.push({
-          index,
+          weekIndex,
           label: date.toLocaleDateString("en-US", { month: "short" }),
         });
         lastMonth = key;
@@ -117,6 +131,7 @@ export default function ContributionHeatmap() {
   };
 
   const monthLabels = getMonthLabels();
+  const totalWeeks = Math.max(grid.length, 1);
 
   return (
     <div className="heatmap-container">
@@ -137,7 +152,10 @@ export default function ContributionHeatmap() {
               <div
                 key={idx}
                 className="month-label"
-                style={{ marginLeft: `${item.index * 15}px` }}
+                style={{
+                  left: `${(item.weekIndex / totalWeeks) * 100}%`,
+                  position: "absolute",
+                }}
               >
                 {item.label}
               </div>
@@ -155,10 +173,24 @@ export default function ContributionHeatmap() {
             ))}
           </div>
 
-          <div className="heatmap-grid">
+          <div
+            className="heatmap-grid"
+            style={{
+              gridTemplateColumns: `repeat(${totalWeeks}, minmax(0, 1fr))`,
+            }}
+          >
             {grid.map((weekColumn, colIdx) => (
               <div key={colIdx} className="heatmap-column">
                 {weekColumn.map((item, rowIdx) => {
+                  if (!item) {
+                    return (
+                      <div
+                        key={`${colIdx}-${rowIdx}`}
+                        className="heatmap-cell intensity-0 heatmap-cell-empty"
+                      />
+                    );
+                  }
+
                   const intensity = getIntensityLevel(item.count);
                   return (
                     <div

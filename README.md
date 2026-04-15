@@ -247,11 +247,12 @@ Get completion history for a specific habit (90 days)
 Get daily habit completion counts for the past year (used for contribution heatmap)
 
 **Response:**
+
 ```json
 [
-  {"date": "2024-04-11", "count": 3},
-  {"date": "2024-04-12", "count": 1},
-  {"date": "2024-04-13", "count": 0}
+  { "date": "2024-04-11", "count": 3 },
+  { "date": "2024-04-12", "count": 1 },
+  { "date": "2024-04-13", "count": 0 }
 ]
 ```
 
@@ -367,7 +368,7 @@ The Analytics page now includes a **GitHub-style contribution heatmap** that vis
 ```
 ░ Empty (Gray)       = 0 habits completed
 ░ Light Green        = 1 habit completed
-▓ Medium Green       = 2 habits completed  
+▓ Medium Green       = 2 habits completed
 ▓ Dark Green         = 3 habits completed
 █ Vibrant Green      = 4+ habits completed
 ```
@@ -379,7 +380,7 @@ The Analytics page now includes a **GitHub-style contribution heatmap** that vis
 ✅ Refresh button to reload data  
 ✅ Fully responsive - adapts to mobile, tablet, and desktop screens  
 ✅ Fast performance - aggregates data efficiently  
-✅ No external charting library required  
+✅ No external charting library required
 
 The contribution heatmap appears at the top of the Analytics page and provides a quick visual overview of your entire year of habit tracking and consistency patterns.
 
