@@ -18,6 +18,7 @@ export default function AddHabit({ onAdd }) {
   const [icon, setIcon] = useState("⭐");
   const [color, setColor] = useState("#6366f1");
   const [weeklyTarget, setWeeklyTarget] = useState(5);
+  const [reminderTime, setReminderTime] = useState("");
   const [habits, setHabits] = useState([]);
   const [msg, setMsg] = useState("");
   const [msgType, setMsgType] = useState(""); // 'success' or 'error'
@@ -27,6 +28,7 @@ export default function AddHabit({ onAdd }) {
   const [editIcon, setEditIcon] = useState("⭐");
   const [editColor, setEditColor] = useState("#6366f1");
   const [editWeeklyTarget, setEditWeeklyTarget] = useState(5);
+  const [editReminderTime, setEditReminderTime] = useState("");
 
   const loadHabits = useCallback(async () => {
     try {
@@ -55,10 +57,17 @@ export default function AddHabit({ onAdd }) {
 
     try {
       setLoading(true);
-      await addHabit({ name, icon, color, weekly_target: weeklyTarget });
+      await addHabit({
+        name,
+        icon,
+        color,
+        weekly_target: weeklyTarget,
+        reminder_time: reminderTime || null,
+      });
       showMessage("✅ Habit added successfully!", "success");
       setName("");
       setWeeklyTarget(5);
+      setReminderTime("");
       await loadHabits();
       setTimeout(() => {
         onAdd();
@@ -88,11 +97,13 @@ export default function AddHabit({ onAdd }) {
     setEditIcon(habit.icon || "⭐");
     setEditColor(habit.color || "#6366f1");
     setEditWeeklyTarget(habit.weekly_target || 7);
+    setEditReminderTime(habit.reminder_time || "");
   };
 
   const cancelEdit = () => {
     setEditingHabitId(null);
     setEditName("");
+    setEditReminderTime("");
   };
 
   const handleUpdate = async () => {
@@ -106,6 +117,7 @@ export default function AddHabit({ onAdd }) {
         icon: editIcon,
         color: editColor,
         weekly_target: editWeeklyTarget,
+        reminder_time: editReminderTime || null,
       });
       showMessage("✅ Habit updated successfully!", "success");
       setEditingHabitId(null);
@@ -188,12 +200,25 @@ export default function AddHabit({ onAdd }) {
           </select>
         </div>
 
+        <div className="form-group">
+          <label>Reminder Time (Optional)</label>
+          <input
+            className="input"
+            type="time"
+            value={reminderTime}
+            onChange={(e) => setReminderTime(e.target.value)}
+          />
+        </div>
+
         <div className="habit-preview" style={{ borderColor: color }}>
           <span className="preview-icon">{icon}</span>
           <div>
             <p className="preview-label">Preview</p>
             <strong>{name.trim() || "Your new habit"}</strong>
             <p className="preview-target">Target: {weeklyTarget}/7 days</p>
+            <p className="preview-target">
+              Reminder: {reminderTime ? reminderTime : "Not set"}
+            </p>
           </div>
         </div>
 
@@ -216,6 +241,7 @@ export default function AddHabit({ onAdd }) {
               {h.icon} {h.name}
             </span>
             <span className="habit-row-target">🎯 {h.weekly_target || 7}/7</span>
+            <span className="habit-row-time">⏰ {h.reminder_time || "--:--"}</span>
             <div className="habit-row-actions">
               <button className="edit-btn" onClick={() => beginEdit(h)}>
                 ✏️
@@ -284,6 +310,16 @@ export default function AddHabit({ onAdd }) {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div className="form-group">
+              <label>Reminder Time (Optional)</label>
+              <input
+                className="input"
+                type="time"
+                value={editReminderTime}
+                onChange={(e) => setEditReminderTime(e.target.value)}
+              />
             </div>
 
             <div className="edit-panel-actions">

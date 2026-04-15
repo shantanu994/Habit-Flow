@@ -514,6 +514,17 @@ body {
   transition: all 0.3s;
 }
 
+.habit-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.habit-reminder {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
 .streak-badge {
   font-family: "JetBrains Mono", monospace;
   font-size: 13px;
@@ -936,6 +947,12 @@ body {
   font-size: 12px;
   font-family: "JetBrains Mono", monospace;
   color: #9dd3ff;
+}
+
+.habit-row-time {
+  font-size: 12px;
+  font-family: "JetBrains Mono", monospace;
+  color: #c9dbff;
 }
 
 .habit-row-actions {

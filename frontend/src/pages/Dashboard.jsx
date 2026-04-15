@@ -196,7 +196,12 @@ export default function Dashboard() {
                 {habit.completed_today ? "✓" : ""}
               </button>
               <span className="habit-icon">{habit.icon}</span>
-              <span className="habit-name">{habit.name}</span>
+              <div className="habit-text">
+                <span className="habit-name">{habit.name}</span>
+                <span className="habit-reminder">
+                  ⏰ {habit.reminder_time || "No reminder"}
+                </span>
+              </div>
             </div>
             <div className="streak">🔥 {habit.streak}</div>
           </div>

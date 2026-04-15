@@ -22,6 +22,11 @@ with app.app_context():
             text("ALTER TABLE habit ADD COLUMN weekly_target INTEGER NOT NULL DEFAULT 7")
         )
         db.session.commit()
+    if "reminder_time" not in column_names:
+        db.session.execute(
+            text("ALTER TABLE habit ADD COLUMN reminder_time VARCHAR(5)")
+        )
+        db.session.commit()
 
 
 # ── GET all habits with today's status ──────────────
@@ -61,11 +66,16 @@ def add_habit():
         if weekly_target < 1 or weekly_target > 7:
             return jsonify({"error": "Weekly target must be between 1 and 7"}), 400
 
+        reminder_time = normalize_reminder_time(data.get("reminder_time"))
+        if data.get("reminder_time") is not None and reminder_time is None:
+            return jsonify({"error": "Reminder time must be in HH:MM format"}), 400
+
         habit = Habit(
             name=data["name"].strip(),
             icon=data.get("icon", "⭐"),
             color=data.get("color", "#6366f1"),
             weekly_target=weekly_target,
+            reminder_time=reminder_time,
         )
         db.session.add(habit)
         db.session.commit()
@@ -105,6 +115,12 @@ def update_habit(habit_id):
             if weekly_target < 1 or weekly_target > 7:
                 return jsonify({"error": "Weekly target must be between 1 and 7"}), 400
             habit.weekly_target = weekly_target
+
+        if "reminder_time" in data:
+            reminder_time = normalize_reminder_time(data.get("reminder_time"))
+            if data.get("reminder_time") is not None and data.get("reminder_time") != "" and reminder_time is None:
+                return jsonify({"error": "Reminder time must be in HH:MM format"}), 400
+            habit.reminder_time = reminder_time
 
         db.session.commit()
         return jsonify(habit.to_dict())
@@ -263,6 +279,30 @@ def get_current_week_bounds():
     week_start = today - timedelta(days=today.weekday())
     week_end = week_start + timedelta(days=6)
     return week_start, week_end
+
+
+def normalize_reminder_time(value):
+    if value is None:
+        return None
+
+    value = str(value).strip()
+    if value == "":
+        return None
+
+    parts = value.split(":")
+    if len(parts) != 2:
+        return None
+
+    hour, minute = parts
+    if not (hour.isdigit() and minute.isdigit()):
+        return None
+
+    hour_i = int(hour)
+    minute_i = int(minute)
+    if hour_i < 0 or hour_i > 23 or minute_i < 0 or minute_i > 59:
+        return None
+
+    return f"{hour_i:02d}:{minute_i:02d}"
 
 
 if __name__ == "__main__":
