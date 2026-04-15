@@ -22,6 +22,8 @@ export default function Analytics() {
   const [weeklyTrend, setWeeklyTrend] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("completions");
 
   useEffect(() => {
     loadAnalytics();
@@ -73,12 +75,24 @@ export default function Analytics() {
       </div>
     );
 
-  const barData = analytics.map((h) => ({
+  const visibleAnalytics = [...analytics]
+    .filter((h) => {
+      if (statusFilter === "on-track") return h.weekly_on_track;
+      if (statusFilter === "off-track") return !h.weekly_on_track;
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === "name") return a.name.localeCompare(b.name);
+      if (sortBy === "streak") return b.current_streak - a.current_streak;
+      return b.total_completions - a.total_completions;
+    });
+
+  const barData = visibleAnalytics.map((h) => ({
     name: h.icon + " " + h.name,
     completions: h.total_completions,
     fill: h.color,
   }));
-  const pieData = analytics.map((h) => ({
+  const pieData = visibleAnalytics.map((h) => ({
     name: h.name,
     value: h.total_completions,
     color: h.color,
@@ -94,8 +108,36 @@ export default function Analytics() {
       {/* Contribution Heatmap */}
       <ContributionHeatmap />
 
+      <div className="control-row">
+        <div className="control-group">
+          <label>Weekly Status</label>
+          <select
+            className="input control-input"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">All habits</option>
+            <option value="on-track">On track</option>
+            <option value="off-track">Off track</option>
+          </select>
+        </div>
+
+        <div className="control-group">
+          <label>Sort</label>
+          <select
+            className="input control-input"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="completions">Most completions</option>
+            <option value="streak">Highest streak</option>
+            <option value="name">Name A-Z</option>
+          </select>
+        </div>
+      </div>
+
       <div className="stat-cards-grid">
-        {analytics.map((h) => (
+        {visibleAnalytics.map((h) => (
           <div
             key={h.id}
             className="analytics-stat"
@@ -114,6 +156,10 @@ export default function Analytics() {
           </div>
         ))}
       </div>
+
+      {visibleAnalytics.length === 0 && (
+        <div className="empty">No habits match the selected filter.</div>
+      )}
 
       <div className="chart-card">
         <h3>Weekly Momentum Trend</h3>

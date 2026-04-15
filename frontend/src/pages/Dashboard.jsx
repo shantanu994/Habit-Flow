@@ -10,6 +10,8 @@ export default function Dashboard() {
   const [quote, setQuote] = useState(getRandomQuote());
   const [animatingId, setAnimatingId] = useState(null);
   const [allDoneShown, setAllDoneShown] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("default");
   const prevCompleted = useRef(0);
 
   useEffect(() => {
@@ -71,6 +73,18 @@ export default function Dashboard() {
   });
   const allDone = habits.length > 0 && completed === habits.length;
 
+  const displayedHabits = [...habits]
+    .filter((habit) => {
+      if (statusFilter === "completed") return habit.completed_today;
+      if (statusFilter === "pending") return !habit.completed_today;
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === "name") return a.name.localeCompare(b.name);
+      if (sortBy === "streak") return b.streak - a.streak;
+      return 0;
+    });
+
   if (loading) return <div className="loading">Loading...</div>;
 
   return (
@@ -122,6 +136,34 @@ export default function Dashboard() {
         </div>
       </div>
 
+      <div className="control-row">
+        <div className="control-group">
+          <label>Status</label>
+          <select
+            className="input control-input"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">All habits</option>
+            <option value="pending">Pending only</option>
+            <option value="completed">Completed only</option>
+          </select>
+        </div>
+
+        <div className="control-group">
+          <label>Sort</label>
+          <select
+            className="input control-input"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="default">Default</option>
+            <option value="streak">Highest streak</option>
+            <option value="name">Name A-Z</option>
+          </select>
+        </div>
+      </div>
+
       {/* Habits List */}
       <div className="habits-list">
         {habits.length === 0 && (
@@ -129,7 +171,10 @@ export default function Dashboard() {
             No habits yet! Click ➕ Add Habit to start.
           </div>
         )}
-        {habits.map((habit) => (
+        {habits.length > 0 && displayedHabits.length === 0 && (
+          <div className="empty">No habits match the selected filter.</div>
+        )}
+        {displayedHabits.map((habit) => (
           <div
             key={habit.id}
             className={`habit-card 
