@@ -637,6 +637,17 @@ body {
   color: var(--muted);
 }
 
+.analytics-stat .s-weekly {
+  font-size: 12px;
+  color: #d9e8ff;
+  font-weight: 600;
+}
+
+.analytics-stat .s-weekly-meta {
+  font-size: 11px;
+  color: #8dc8ff;
+}
+
 .chart-card {
   background: linear-gradient(
     135deg,
@@ -876,6 +887,12 @@ body {
   letter-spacing: 0.06em;
 }
 
+.preview-target {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #9dd3ff;
+}
+
 .habit-row {
   display: flex;
   justify-content: space-between;
@@ -883,6 +900,17 @@ body {
   padding: 12px 0;
   border-bottom: 1px solid var(--glass-border);
   font-size: 14px;
+  gap: 8px;
+}
+
+.habit-row-main {
+  flex: 1;
+}
+
+.habit-row-target {
+  font-size: 12px;
+  font-family: "JetBrains Mono", monospace;
+  color: #9dd3ff;
 }
 
 .delete-btn {

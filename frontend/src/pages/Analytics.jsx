@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAnalytics } from "../api/habits";
+import { getAnalytics, getWeeklyTrend } from "../api/habits";
 import ContributionHeatmap from "../components/ContributionHeatmap";
 import {
   BarChart,
@@ -12,10 +12,14 @@ import {
   Pie,
   Cell,
   Legend,
+  LineChart,
+  Line,
+  CartesianGrid,
 } from "recharts";
 
 export default function Analytics() {
   const [analytics, setAnalytics] = useState([]);
+  const [weeklyTrend, setWeeklyTrend] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,8 +31,12 @@ export default function Analytics() {
     try {
       setError(null);
       setLoading(true);
-      const data = await getAnalytics();
-      setAnalytics(data);
+      const [analyticsData, trendData] = await Promise.all([
+        getAnalytics(),
+        getWeeklyTrend(),
+      ]);
+      setAnalytics(analyticsData);
+      setWeeklyTrend(trendData);
     } catch (err) {
       setError("Failed to load analytics. Please try again.");
       console.error(err);
@@ -99,8 +107,34 @@ export default function Analytics() {
             <div className="s-total">
               {h.total_completions} total completions
             </div>
+            <div className="s-weekly">
+              🎯 {h.weekly_completions}/{h.weekly_target} this week
+            </div>
+            <div className="s-weekly-meta">{h.weekly_progress_pct}% of target</div>
           </div>
         ))}
+      </div>
+
+      <div className="chart-card">
+        <h3>Weekly Momentum Trend</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <LineChart data={weeklyTrend}>
+            <CartesianGrid strokeDasharray="4 4" stroke="rgba(255,255,255,0.12)" />
+            <XAxis dataKey="week_label" tick={{ fontSize: 11 }} />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="completed" name="Completed" fill="#4f7cff" radius={[6, 6, 0, 0]} />
+            <Line
+              type="monotone"
+              dataKey="target"
+              name="Target"
+              stroke="#ffb347"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
 
       <div className="chart-card">

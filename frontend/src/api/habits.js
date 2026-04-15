@@ -42,3 +42,5 @@ export const getHeatmap = (id) =>
   apiClient.get(`/habits/${id}/heatmap`).then((r) => r.data);
 export const getYearHeatmap = () =>
   apiClient.get(`/heatmap/year`).then((r) => r.data);
+export const getWeeklyTrend = () =>
+  apiClient.get(`/analytics/weekly-trend`).then((r) => r.data);

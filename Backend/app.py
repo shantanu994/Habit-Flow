@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from sqlalchemy import and_
+from sqlalchemy import text
 from models import db, Habit, HabitLog
 from datetime import date, timedelta
 
@@ -13,6 +14,14 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+    ensure_columns_sql = "PRAGMA table_info(habit)"
+    columns = db.session.execute(text(ensure_columns_sql)).fetchall()
+    column_names = {col[1] for col in columns}
+    if "weekly_target" not in column_names:
+        db.session.execute(
+            text("ALTER TABLE habit ADD COLUMN weekly_target INTEGER NOT NULL DEFAULT 7")
+        )
+        db.session.commit()
 
 
 # ── GET all habits with today's status ──────────────
@@ -42,10 +51,21 @@ def add_habit():
             return jsonify({"error": "Habit name is required"}), 400
         if not data["name"].strip():
             return jsonify({"error": "Habit name cannot be empty"}), 400
+
+        weekly_target = data.get("weekly_target", 7)
+        try:
+            weekly_target = int(weekly_target)
+        except (TypeError, ValueError):
+            return jsonify({"error": "Weekly target must be a number between 1 and 7"}), 400
+
+        if weekly_target < 1 or weekly_target > 7:
+            return jsonify({"error": "Weekly target must be between 1 and 7"}), 400
+
         habit = Habit(
             name=data["name"].strip(),
             icon=data.get("icon", "⭐"),
             color=data.get("color", "#6366f1"),
+            weekly_target=weekly_target,
         )
         db.session.add(habit)
         db.session.commit()
@@ -90,16 +110,59 @@ def mark_complete(habit_id):
 @app.route("/api/analytics", methods=["GET"])
 def get_analytics():
     habits = Habit.query.all()
+    week_start, week_end = get_current_week_bounds()
     result = []
     for h in habits:
         total = HabitLog.query.filter_by(habit_id=h.id, completed=True).count()
+        weekly = HabitLog.query.filter(
+            HabitLog.habit_id == h.id,
+            HabitLog.completed == True,
+            HabitLog.date >= week_start,
+            HabitLog.date <= week_end,
+        ).count()
+        weekly_progress_pct = round((weekly / h.weekly_target) * 100) if h.weekly_target else 0
         result.append(
             {
                 **h.to_dict(),
                 "total_completions": total,
                 "current_streak": calculate_streak(h.id),
+                "weekly_completions": weekly,
+                "weekly_progress_pct": weekly_progress_pct,
+                "weekly_on_track": weekly >= h.weekly_target,
             }
         )
+    return jsonify(result)
+
+
+@app.route("/api/analytics/weekly-trend", methods=["GET"])
+def get_weekly_trend():
+    habits = Habit.query.all()
+    today = date.today()
+    current_week_start = today - timedelta(days=today.weekday())
+    target_per_week = sum(h.weekly_target for h in habits)
+    result = []
+
+    for week_offset in range(7, -1, -1):
+        week_start = current_week_start - timedelta(days=week_offset * 7)
+        week_end = week_start + timedelta(days=6)
+        completed = HabitLog.query.filter(
+            HabitLog.completed == True,
+            HabitLog.date >= week_start,
+            HabitLog.date <= week_end,
+        ).count()
+        completion_rate = round((completed / target_per_week) * 100) if target_per_week else 0
+
+        result.append(
+            {
+                "week_label": week_start.strftime("%b %d"),
+                "week_start": str(week_start),
+                "week_end": str(week_end),
+                "completed": completed,
+                "target": target_per_week,
+                "completion_rate": completion_rate,
+            }
+        )
+
     return jsonify(result)
 
 
@@ -155,6 +218,13 @@ def calculate_streak(habit_id):
         else:
             break
     return streak
+
+
+def get_current_week_bounds():
+    today = date.today()
+    week_start = today - timedelta(days=today.weekday())
+    week_end = week_start + timedelta(days=6)
+    return week_start, week_end
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ class Habit(db.Model):
     name = db.Column(db.String(100), nullable=False)
     icon = db.Column(db.String(10), default='⭐')
     color = db.Column(db.String(20), default='#6366f1')
+    weekly_target = db.Column(db.Integer, default=7, nullable=False)
     created_at = db.Column(db.Date, default=date.today)
     logs = db.relationship('HabitLog', backref='habit', cascade='all, delete-orphan')
 
@@ -17,6 +18,7 @@ class Habit(db.Model):
             'name': self.name,
             'icon': self.icon,
             'color': self.color,
+            'weekly_target': self.weekly_target,
             'created_at': str(self.created_at)
         }
 

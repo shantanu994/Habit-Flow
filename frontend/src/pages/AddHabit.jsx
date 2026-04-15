@@ -17,6 +17,7 @@ export default function AddHabit({ onAdd }) {
   const [name, setName] = useState("");
   const [icon, setIcon] = useState("⭐");
   const [color, setColor] = useState("#6366f1");
+  const [weeklyTarget, setWeeklyTarget] = useState(5);
   const [habits, setHabits] = useState([]);
   const [msg, setMsg] = useState("");
   const [msgType, setMsgType] = useState(""); // 'success' or 'error'
@@ -49,9 +50,10 @@ export default function AddHabit({ onAdd }) {
 
     try {
       setLoading(true);
-      await addHabit({ name, icon, color });
+      await addHabit({ name, icon, color, weekly_target: weeklyTarget });
       showMessage("✅ Habit added successfully!", "success");
       setName("");
+      setWeeklyTarget(5);
       await loadHabits();
       setTimeout(() => {
         onAdd();
@@ -129,11 +131,27 @@ export default function AddHabit({ onAdd }) {
           </div>
         </div>
 
+        <div className="form-group">
+          <label>Weekly Target</label>
+          <select
+            className="input"
+            value={weeklyTarget}
+            onChange={(e) => setWeeklyTarget(Number(e.target.value))}
+          >
+            {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+              <option key={n} value={n}>
+                {n} day{n > 1 ? "s" : ""} per week
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="habit-preview" style={{ borderColor: color }}>
           <span className="preview-icon">{icon}</span>
           <div>
             <p className="preview-label">Preview</p>
             <strong>{name.trim() || "Your new habit"}</strong>
+            <p className="preview-target">Target: {weeklyTarget}/7 days</p>
           </div>
         </div>
 
@@ -152,9 +170,10 @@ export default function AddHabit({ onAdd }) {
         <h3>Your Habits ({habits.length})</h3>
         {habits.map((h) => (
           <div key={h.id} className="habit-row">
-            <span>
+            <span className="habit-row-main">
               {h.icon} {h.name}
             </span>
+            <span className="habit-row-target">🎯 {h.weekly_target || 7}/7</span>
             <button className="delete-btn" onClick={() => handleDelete(h.id)}>
               🗑️
             </button>
