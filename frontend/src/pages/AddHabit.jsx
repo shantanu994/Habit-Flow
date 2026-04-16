@@ -101,11 +101,12 @@ export default function AddHabit({ onAdd }) {
     try {
       setLoading(true);
       const res = await seedDemoData();
-      if (res.created > 0) {
-        showMessage("✅ Demo data added!", "success");
-      } else {
-        showMessage("ℹ️ Demo data skipped: habits already exist.", "success");
-      }
+      const createdHabits = res.created_habits || 0;
+      const createdLogs = res.created_logs || 0;
+      showMessage(
+        `✅ Demo synced: +${createdHabits} habits, +${createdLogs} logs`,
+        "success",
+      );
       await loadHabits();
     } catch (err) {
       console.error(err);

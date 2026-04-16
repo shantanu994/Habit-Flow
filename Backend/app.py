@@ -224,14 +224,6 @@ def get_weekly_trend():
 @app.route("/api/demo/seed", methods=["POST"])
 def seed_demo_data():
     try:
-        if Habit.query.count() > 0:
-            return jsonify(
-                {
-                    "message": "Demo data not added because habits already exist",
-                    "created": 0,
-                }
-            )
-
         demo_habits = [
             {
                 "name": "Morning Walk",
@@ -278,24 +270,44 @@ def seed_demo_data():
             {0, 2, 3, 5, 6},
         ]
 
-        created_habits = []
+        synced_habits = []
+        created_habit_count = 0
+        created_log_count = 0
+
+        # Create missing demo habits by name, reuse existing ones if present.
         for entry in demo_habits:
-            habit = Habit(**entry)
-            db.session.add(habit)
-            created_habits.append(habit)
+            habit = Habit.query.filter_by(name=entry["name"]).first()
+            if not habit:
+                habit = Habit(**entry)
+                db.session.add(habit)
+                created_habit_count += 1
+            synced_habits.append(habit)
 
         db.session.flush()
 
         today = date.today()
-        for idx, habit in enumerate(created_habits):
+        for idx, habit in enumerate(synced_habits):
             pattern = weekday_patterns[idx % len(weekday_patterns)]
             for days_ago in range(0, 35):
                 log_date = today - timedelta(days=days_ago)
                 if log_date.weekday() in pattern and (days_ago + idx) % 6 != 0:
-                    db.session.add(HabitLog(habit_id=habit.id, date=log_date, completed=True))
+                    existing_log = HabitLog.query.filter_by(
+                        habit_id=habit.id,
+                        date=log_date,
+                        completed=True,
+                    ).first()
+                    if not existing_log:
+                        db.session.add(HabitLog(habit_id=habit.id, date=log_date, completed=True))
+                        created_log_count += 1
 
         db.session.commit()
-        return jsonify({"message": "Demo data added", "created": len(created_habits)})
+        return jsonify(
+            {
+                "message": "Demo data synced",
+                "created_habits": created_habit_count,
+                "created_logs": created_log_count,
+            }
+        )
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
