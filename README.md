@@ -25,7 +25,7 @@ It helps you stay consistent through streaks, analytics, visual feedback, and si
 - Flask
 - Flask-CORS
 - SQLAlchemy
-- SQLite
+- MySQL (via PyMySQL)
 
 ### Frontend
 
@@ -41,6 +41,7 @@ Habit-Flow/
 |-- Backend/
 |   |-- app.py
 |   |-- models.py
+|   |-- .env.example
 |   |-- requirements.txt
 |   `-- instance/
 |-- frontend/
@@ -90,6 +91,34 @@ Install dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+Create environment file:
+
+```bash
+cp .env.example .env
+```
+
+For Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Update `.env` with your MySQL details:
+
+```env
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_DB=habit_flow
+MYSQL_USER=root
+MYSQL_PASSWORD=your_mysql_password
+```
+
+If you prefer a single URL instead, set:
+
+```env
+DATABASE_URL=mysql+pymysql://root:your_mysql_password@localhost:3306/habit_flow?charset=utf8mb4
 ```
 
 Run backend:
@@ -142,6 +171,10 @@ Frontend runs at: `http://localhost:3000`
 
 ### Utility
 
+- `GET /`
+  - Backend status message and quick endpoint list
+- `GET /api/health`
+  - Health check endpoint
 - `POST /api/demo/seed`
   - Adds/syncs demo habits and historical logs
 
@@ -186,13 +219,15 @@ npm test
 
 ## Backend Notes
 
-- Database is SQLite and auto-migrates basic added columns at app startup
+- Database connection is read from `.env` using MySQL env vars or `DATABASE_URL`
+- Uses `mysql+pymysql` SQLAlchemy driver with UTF-8 (`utf8mb4`) support
 - CORS is enabled for local frontend development
 
 ## Troubleshooting
 
 - If frontend cannot reach backend, verify backend is running on port 5000
-- If database schema is out of sync, stop server and restart backend to run startup column checks
+- If backend starts but API fails, verify `.env` values and MySQL user permissions
+- Confirm database and tables exist in MySQL (`habit_flow`, `habit`, `habit_log`)
 - If port is busy, change app run port in backend and update API base URL in frontend
 
 ## License
