@@ -25,7 +25,7 @@ export default function App() {
           {/* Logo at top */}
           <div className="top-header">
             <div className="brand-stack">
-              <div className="logo-badge">🔥 HabitFlow</div>
+              <div className="logo-badge">HabitFlow</div>
               <p className="brand-tag">Daily systems, beautifully executed.</p>
             </div>
             <div className="header-pill">Today · {today}</div>
@@ -43,21 +43,18 @@ export default function App() {
             className={`nav-btn ${page === "dashboard" ? "active" : ""}`}
             onClick={() => setPage("dashboard")}
           >
-            <span>🏠</span>
             <span>Today</span>
           </button>
           <button
             className={`nav-btn ${page === "analytics" ? "active" : ""}`}
             onClick={() => setPage("analytics")}
           >
-            <span>📊</span>
             <span>Analytics</span>
           </button>
           <button
             className={`nav-btn ${page === "add" ? "active" : ""}`}
             onClick={() => setPage("add")}
           >
-            <span>➕</span>
             <span>Add Habit</span>
           </button>
         </nav>

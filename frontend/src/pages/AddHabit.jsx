@@ -82,7 +82,7 @@ export default function AddHabit({ onAdd }) {
         weekly_target: weeklyTarget,
         reminder_time: reminderTime || null,
       });
-      showMessage("✅ Habit added successfully!", "success");
+      showMessage("Habit added successfully.", "success");
       setName("");
       setWeeklyTarget(5);
       setReminderTime("");
@@ -102,11 +102,11 @@ export default function AddHabit({ onAdd }) {
   const handleDelete = async (id) => {
     try {
       await deleteHabit(id);
-      showMessage("✅ Habit deleted!", "success");
+      showMessage("Habit deleted.", "success");
       await loadHabits();
     } catch (err) {
       console.error(err);
-      showMessage("❌ Failed to delete habit.", "error");
+      showMessage("Failed to delete habit.", "error");
     }
   };
 
@@ -118,13 +118,13 @@ export default function AddHabit({ onAdd }) {
       const createdHabits = res.created_habits || 0;
       const createdLogs = res.created_logs || 0;
       showMessage(
-        `✅ Last ${seededDays} days synced: +${createdHabits} habits, +${createdLogs} logs`,
+        `Last ${seededDays} days synced: +${createdHabits} habits, +${createdLogs} logs`,
         "success",
       );
       await loadHabits();
     } catch (err) {
       console.error(err);
-      showMessage("❌ Failed to add demo data.", "error");
+      showMessage("Failed to add demo data.", "error");
     } finally {
       setLoading(false);
     }
@@ -161,13 +161,13 @@ export default function AddHabit({ onAdd }) {
         weekly_target: editWeeklyTarget,
         reminder_time: editReminderTime || null,
       });
-      showMessage("✅ Habit updated successfully!", "success");
+      showMessage("Habit updated successfully.", "success");
       setEditingHabitId(null);
       setEditName("");
       await loadHabits();
     } catch (err) {
       console.error(err);
-      showMessage("❌ Failed to update habit.", "error");
+      showMessage("Failed to update habit.", "error");
     } finally {
       setLoading(false);
     }
@@ -176,7 +176,7 @@ export default function AddHabit({ onAdd }) {
   return (
     <div className="page">
       <div className="page-header">
-        <h1>➕ Add New Habit</h1>
+        <h1>Add New Habit</h1>
         <p>Build habits that stick</p>
       </div>
 
@@ -287,7 +287,7 @@ export default function AddHabit({ onAdd }) {
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? "⏳ Adding..." : `${icon} Add Habit`}
+          {loading ? "Adding..." : "Add Habit"}
         </button>
       </div>
 
@@ -299,7 +299,7 @@ export default function AddHabit({ onAdd }) {
             onClick={handleSeedDemo}
             disabled={loading}
           >
-            🧪 Load 1-Month Demo Data
+            Load 1-Month Demo Data
           </button>
         </div>
         {habits.map((h) => (
@@ -308,20 +308,20 @@ export default function AddHabit({ onAdd }) {
               {h.icon} {h.name}
             </span>
             <span className="habit-row-category">
-              🏷️ {h.category || "General"}
+              {h.category || "General"}
             </span>
             <span className="habit-row-target">
-              🎯 {h.weekly_target || 7}/7
+              {h.weekly_target || 7}/7
             </span>
             <span className="habit-row-time">
-              ⏰ {h.reminder_time || "--:--"}
+              {h.reminder_time || "--:--"}
             </span>
             <div className="habit-row-actions">
               <button className="edit-btn" onClick={() => beginEdit(h)}>
-                ✏️
+                Edit
               </button>
               <button className="delete-btn" onClick={() => handleDelete(h.id)}>
-                🗑️
+                Delete
               </button>
             </div>
           </div>
@@ -421,7 +421,7 @@ export default function AddHabit({ onAdd }) {
                 onClick={handleUpdate}
                 disabled={loading}
               >
-                {loading ? "⏳ Saving..." : "💾 Save Changes"}
+                {loading ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>

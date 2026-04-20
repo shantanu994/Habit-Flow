@@ -52,7 +52,7 @@ export default function Dashboard() {
       !allDoneShown
     ) {
       setAllDoneShown(true);
-      setQuote("🎉 ALL HABITS DONE! You're on fire today!");
+      setQuote("All habits done. Great consistency today.");
       playAllDone();
       confetti({
         particleCount: 150,
@@ -115,23 +115,23 @@ export default function Dashboard() {
   return (
     <div className="page">
       <div className="page-header">
-        <h1>Good day! 👋</h1>
+        <h1>Good day!</h1>
         <p>{today}</p>
       </div>
 
       <div className="stat-row">
         <div className="stat-card premium-stat-card">
-          <div className="s-icon">✅</div>
+          <div className="s-icon">Done</div>
           <div className="s-val">{completed}</div>
           <div className="s-label">Done Today</div>
         </div>
         <div className="stat-card premium-stat-card">
-          <div className="s-icon">🧩</div>
+          <div className="s-icon">Left</div>
           <div className="s-val">{Math.max(habits.length - completed, 0)}</div>
           <div className="s-label">Remaining</div>
         </div>
         <div className="stat-card premium-stat-card">
-          <div className="s-icon">🔥</div>
+          <div className="s-icon">Streak</div>
           <div className="s-val">{bestStreak}</div>
           <div className="s-label">Best Streak</div>
         </div>
@@ -139,7 +139,7 @@ export default function Dashboard() {
 
       {/* Motivational Quote */}
       <div className={`quote-card ${allDone ? "quote-celebration" : ""}`}>
-        <span>💬</span> {quote}
+        <span>Quote:</span> {quote}
       </div>
 
       {/* Progress Bar */}
@@ -208,7 +208,7 @@ export default function Dashboard() {
       <div className="habits-list">
         {habits.length === 0 && (
           <div className="empty">
-            No habits yet! Click ➕ Add Habit to start.
+            No habits yet! Click Add Habit to start.
           </div>
         )}
         {habits.length > 0 && displayedHabits.length === 0 && (
@@ -239,15 +239,15 @@ export default function Dashboard() {
               <div className="habit-text">
                 <span className="habit-name">{habit.name}</span>
                 <span className="habit-category-badge">
-                  🏷️ {habit.category || "General"}
+                  Category: {habit.category || "General"}
                 </span>
                 <span className="habit-reminder">
-                  ⏰ {habit.reminder_time || "No reminder"}
+                  Reminder: {habit.reminder_time || "No reminder"}
                 </span>
               </div>
             </div>
             <div className="habit-right">
-              <div className="streak">🔥 {habit.streak}</div>
+              <div className="streak">Streak: {habit.streak}</div>
               <div className="habit-note-box" onClick={(e) => e.stopPropagation()}>
                 <input
                   className="habit-note-input"
@@ -271,7 +271,7 @@ export default function Dashboard() {
       {/* All Done Banner */}
       {allDone && (
         <div className="all-done-banner">
-          🏆 Perfect Day! All habits completed!
+          Perfect day. All habits completed.
         </div>
       )}
     </div>

@@ -52,22 +52,22 @@ export default function Analytics() {
     return (
       <div className="page">
         <div className="error-container">
-          <h2>❌ Error</h2>
+          <h2>Error</h2>
           <p>{error}</p>
           <button className="retry-btn" onClick={loadAnalytics}>
-            🔄 Retry
+            Retry
           </button>
         </div>
       </div>
     );
 
-  if (loading) return <div className="loading">⏳ Loading analytics...</div>;
+  if (loading) return <div className="loading">Loading analytics...</div>;
 
   if (analytics.length === 0)
     return (
       <div className="page">
         <div className="page-header">
-          <h1>📊 Analytics</h1>
+          <h1>Analytics</h1>
           <p>Your habit performance</p>
         </div>
         <div className="empty">
@@ -110,7 +110,7 @@ export default function Analytics() {
   return (
     <div className="page">
       <div className="page-header">
-        <h1>📊 Analytics</h1>
+        <h1>Analytics</h1>
         <p>Performance intelligence for your daily systems</p>
       </div>
 
@@ -169,13 +169,13 @@ export default function Analytics() {
           >
             <div className="s-icon">{h.icon}</div>
             <div className="s-name">{h.name}</div>
-            <div className="s-category">🏷️ {h.category || "General"}</div>
-            <div className="s-streak">🔥 {h.current_streak} day streak</div>
+            <div className="s-category">Category: {h.category || "General"}</div>
+            <div className="s-streak">{h.current_streak} day streak</div>
             <div className="s-total">
               {h.total_completions} total completions
             </div>
             <div className="s-weekly">
-              🎯 {h.weekly_completions}/{h.weekly_target} this week
+              {h.weekly_completions}/{h.weekly_target} this week
             </div>
             <div className="s-weekly-meta">{h.weekly_progress_pct}% of target</div>
           </div>
