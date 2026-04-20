@@ -8,14 +8,14 @@ It helps you stay consistent through streaks, analytics, visual feedback, and si
 - Daily habit dashboard with one-click complete/uncomplete toggle
 - Habit streak tracking and daily progress summary
 - Habit categories with category-based filtering
-- Daily quick notes for each habit
+- Status and category filters on dashboard
 - Weekly target system with on-track/off-track analytics
 - Reminder time per habit
 - GitHub-style yearly contribution heatmap
-- Analytics charts (bar, pie, weekly momentum trend)
+- Analytics filters (status, sort, category)
+- Analytics charts (weekly trend, bar, pie)
 - Habit CRUD (create, edit, delete)
 - Demo data seeding for fast testing
-- CSV analytics export API
 
 ## Tech Stack
 
@@ -181,7 +181,7 @@ Then open Dashboard and Analytics to see charts and heatmap populated.
 - `POST /api/habits/<habit_id>/complete`
   - Toggle today's completion
 - `PUT /api/habits/<habit_id>/note`
-  - Save today's note (max 280 chars)
+  - Save today's note (max 280 chars, API supported)
 
 ### Analytics
 
@@ -193,8 +193,6 @@ Then open Dashboard and Analytics to see charts and heatmap populated.
   - Habit completion dates
 - `GET /api/heatmap/year`
   - Aggregated daily counts for past year
-- `GET /api/export/csv`
-  - Download analytics as CSV
 
 ### Utility
 
@@ -231,8 +229,8 @@ Then open Dashboard and Analytics to see charts and heatmap populated.
 
 - Add habit with icon, color, category, weekly target, reminder time
 - Mark complete from dashboard
-- Add/edit today's note directly on dashboard cards
-- Filter by completion status and category
+- Filter dashboard by completion status and category
+- Filter analytics by status, sort, and category
 - View performance and trends in analytics
 
 ## Frontend Scripts

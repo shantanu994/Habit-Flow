@@ -50,7 +50,7 @@ export default function Analytics() {
 
   if (error)
     return (
-      <div className="page">
+      <div className="page analytics-page">
         <div className="error-container">
           <h2>Error</h2>
           <p>{error}</p>
@@ -65,7 +65,7 @@ export default function Analytics() {
 
   if (analytics.length === 0)
     return (
-      <div className="page">
+      <div className="page analytics-page">
         <div className="page-header">
           <h1>Analytics</h1>
           <p>Your habit performance</p>
@@ -108,7 +108,7 @@ export default function Analytics() {
   }));
 
   return (
-    <div className="page">
+    <div className="page analytics-page">
       <div className="page-header">
         <h1>Analytics</h1>
         <p>Performance intelligence for your daily systems</p>
@@ -186,7 +186,7 @@ export default function Analytics() {
         <div className="empty">No habits match the selected filter.</div>
       )}
 
-      <div className="chart-card">
+      <div className="chart-card analytics-chart-card trend-chart">
         <h3>Weekly Momentum Trend</h3>
         <ResponsiveContainer width="100%" height={250}>
           <LineChart data={weeklyTrend}>
@@ -208,7 +208,7 @@ export default function Analytics() {
         </ResponsiveContainer>
       </div>
 
-      <div className="chart-card">
+      <div className="chart-card analytics-chart-card totals-chart">
         <h3>Total Completions per Habit</h3>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={barData}>
@@ -224,7 +224,7 @@ export default function Analytics() {
         </ResponsiveContainer>
       </div>
 
-      <div className="chart-card">
+      <div className="chart-card analytics-chart-card dist-chart">
         <h3>Habit Distribution</h3>
         <ResponsiveContainer width="100%" height={250}>
           <PieChart>

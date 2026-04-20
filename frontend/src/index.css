@@ -755,24 +755,34 @@ select.control-input option {
 }
 
 .analytics-stat {
-  background: linear-gradient(
-    130deg,
-    rgba(255, 255, 255, 0.09),
-    rgba(255, 255, 255, 0.03)
-  );
+  background:
+    radial-gradient(
+      circle at 12% 10%,
+      rgba(79, 124, 255, 0.3),
+      transparent 48%
+    ),
+    linear-gradient(
+      132deg,
+      rgba(255, 255, 255, 0.11),
+      rgba(255, 255, 255, 0.03)
+    );
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(206, 223, 255, 0.22);
+  border: 1px solid rgba(206, 223, 255, 0.28);
   border-radius: 18px;
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 5px;
   transition: all 0.25s;
+  box-shadow: 0 12px 30px rgba(5, 14, 38, 0.35);
 }
 
 .analytics-stat:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow:
+    0 18px 40px rgba(5, 14, 38, 0.44),
+    0 0 0 1px rgba(178, 212, 255, 0.22) inset;
 }
 .analytics-stat .s-icon {
   font-size: 26px;
@@ -794,7 +804,7 @@ select.control-input option {
 
 .analytics-stat .s-streak {
   font-size: 12px;
-  color: #fbbf24;
+  color: #ffd782;
 }
 .analytics-stat .s-total {
   font-size: 11px;
@@ -809,7 +819,66 @@ select.control-input option {
 
 .analytics-stat .s-weekly-meta {
   font-size: 11px;
-  color: #8dc8ff;
+  color: #b3deff;
+}
+
+.analytics-page .stat-cards-grid .analytics-stat:nth-child(3n + 1) {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(79, 124, 255, 0.35), transparent 50%),
+    linear-gradient(132deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.03));
+}
+
+.analytics-page .stat-cards-grid .analytics-stat:nth-child(3n + 2) {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(244, 108, 138, 0.28), transparent 50%),
+    linear-gradient(132deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.03));
+}
+
+.analytics-page .stat-cards-grid .analytics-stat:nth-child(3n) {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(36, 194, 255, 0.28), transparent 50%),
+    linear-gradient(132deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.03));
+}
+
+.analytics-page .control-row {
+  background: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.02)
+  );
+  border: 1px solid rgba(208, 225, 255, 0.2);
+  border-radius: 18px;
+  padding: 12px;
+}
+
+.analytics-page .control-group label {
+  color: rgba(214, 231, 255, 0.82);
+}
+
+.analytics-page .analytics-chart-card {
+  border-color: rgba(205, 224, 255, 0.34);
+}
+
+.analytics-page .analytics-chart-card h3 {
+  color: #f2f7ff;
+}
+
+.analytics-page .analytics-chart-card.trend-chart {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(79, 124, 255, 0.35), transparent 48%),
+    linear-gradient(130deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+}
+
+.analytics-page .analytics-chart-card.totals-chart {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(29, 207, 143, 0.28), transparent 48%),
+    linear-gradient(130deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+}
+
+.analytics-page .analytics-chart-card.dist-chart {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(244, 108, 138, 0.3), transparent 48%),
+    linear-gradient(130deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
 }
 
 .chart-card {
